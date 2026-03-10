@@ -18,6 +18,7 @@ export class Vayu {
     this.configurationManager = ConfigurationService.initialize(apiKey, baseServer);
   }
 
+  /** @deprecated Authentication is now handled automatically. You can remove this call. */
   async login() {
     await this.configurationManager.generateToken();
   }
