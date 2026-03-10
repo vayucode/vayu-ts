@@ -16,20 +16,12 @@ export class VayuAuthenticator {
     this.expiresAt = 0;
   }
 
-  get isAuthenticated(): boolean {
-    return this.accessToken !== undefined;
-  }
-
   get token(): string | undefined {
     return this.accessToken;
   }
 
-  get needsRefresh(): boolean {
-    return !this.accessToken || this.expiresAt <= Date.now() + EXPIRATION_THRESHOLD;
-  }
-
   async ensureValidToken(): Promise<string> {
-    if (this.needsRefresh) {
+    if (!this.accessToken || this.expiresAt <= Date.now() + EXPIRATION_THRESHOLD) {
       await this.authenticate();
     }
 

@@ -1,7 +1,8 @@
-import type { BaseServerConfiguration, Configuration, RequestContext, ResponseContext } from '../../openapi';
+import type { BaseServerConfiguration, Configuration } from '../../openapi';
 import { createConfiguration, server1, server2, ServerConfiguration } from '../../openapi';
 import { getRequiredEnvVar } from '../utils';
 import { VayuAuthenticator } from './authenticator';
+import { AuthenticatedHttpLibrary } from './authenticated-http-library';
 
 const CLIENT_ID_ENV_VAR_NAME = 'CLIENT_ID';
 const BASE_URLS_MAP = new Map<string, BaseServerConfiguration>([
@@ -75,23 +76,7 @@ export class ConfigurationService {
   private get configuration(): Configuration {
     return createConfiguration({
       baseServer: this.baseServer,
-      promiseMiddleware: [{
-        pre: async (context: RequestContext) => {
-          const token = await this.authenticator.ensureValidToken();
-
-          context.setHeaderParam('Authorization', `Bearer ${token}`);
-          context.setHeaderParam('x-api-key', this.clientId);
-
-          return context;
-        },
-        post: async (context: ResponseContext) => {
-          if (context.httpStatusCode === 401) {
-            await this.authenticator.authenticate();
-          }
-
-          return context;
-        },
-      }],
+      httpApi: new AuthenticatedHttpLibrary(this.authenticator, this.clientId),
     });
   }
 }
