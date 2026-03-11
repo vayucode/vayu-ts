@@ -1,7 +1,9 @@
 import { ContractsClient,
+  CreditsClient,
   CustomersClient,
   EventsClient,
   InvoicesClient,
+  MeasurementsClient,
   MetersClient,
   WebhooksClient,
   ProductConsumptionsClient } from './clients';
@@ -49,6 +51,14 @@ export class Vayu {
 
   get productConsumptions() {
     return new ProductConsumptionsClient();
+  }
+
+  get credits() {
+    return new CreditsClient();
+  }
+
+  get measurements() {
+    return new MeasurementsClient();
   }
 }
 

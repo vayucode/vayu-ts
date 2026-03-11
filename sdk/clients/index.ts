@@ -5,3 +5,5 @@ export * from './InvoicesClient';
 export * from './MetersClient';
 export * from './WebhooksClient';
 export * from './ProductsConsumptionsClient';
+export * from './CreditsClient';
+export * from './MeasurementsClient';
