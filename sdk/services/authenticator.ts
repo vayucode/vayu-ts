@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import type { BaseServerConfiguration } from '../../openapi';
 import { AuthApi, createConfiguration } from '../../openapi';
 
-const EXPIRATION_THRESHOLD = 1000 * 60 * 5;
+const EXPIRATION_THRESHOLD_MS = 1000 * 60 * 5;
 
 export class VayuAuthenticator {
   private accessToken: string | undefined;
@@ -21,7 +21,7 @@ export class VayuAuthenticator {
   }
 
   async ensureValidToken(): Promise<string> {
-    if (!this.accessToken || this.expiresAt <= Date.now() + EXPIRATION_THRESHOLD) {
+    if (!this.accessToken || this.expiresAt <= Date.now() + EXPIRATION_THRESHOLD_MS) {
       await this.authenticate();
     }
 
@@ -49,6 +49,14 @@ export class VayuAuthenticator {
       throw new Error('Invalid JWT token');
     }
 
-    this.expiresAt = (decodedJWT.exp ?? Math.floor(Date.now() / 1000) + 60 * 15) * 1000;
+    this.expiresAt = calculateJwtExpirationMs(decodedJWT.exp);
   }
+}
+
+function calculateJwtExpirationMs(decodedJwtExpiration?: number): number {
+  const expirationSeconds = decodedJwtExpiration != null
+    ? decodedJwtExpiration
+    : Math.floor(Date.now() / 1000) + 60 * 15;
+
+  return expirationSeconds * 1000;
 }
