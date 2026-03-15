@@ -33,8 +33,12 @@ const vayu = new Vayu(
 
 #### Login and authenticate
 
+> **Note:** As of the latest version, calling `vayu.login()` is no longer required.
+> Authentication is handled automatically on the first API call. The method still
+> works for backward compatibility but can be safely removed.
+
 ```typescript
-await vayu.login();
+await vayu.login(); // Optional — authentication is now automatic
 ```
 
 ### Events
@@ -202,8 +206,8 @@ app.post('/webhooks', (req, res) => {
   const timestamp = Number(req.headers['x-timestamp']);
   const signature = String(req.headers['x-signature']);
 
-  // Important to login before verifying webhook signatures.
-  await vayu.login();
+  // Note: vayu.login() is no longer required — authentication is automatic.
+  await vayu.login(); // Optional — kept for backward compatibility
   
   const isValid = vayu.verifyWebhookSignature({
     payload,
